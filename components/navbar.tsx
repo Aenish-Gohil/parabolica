@@ -159,7 +159,7 @@ export default function Navbar() {
             ))}
           </ul>
 
-          <div className="flex items-center gap-3 pl-6 border-l border-border/50">
+          <div className="flex items-center gap-3">
             <LanguageSwitcher />
             <ThemeSwitcher />
           </div>
