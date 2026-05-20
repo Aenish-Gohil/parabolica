@@ -4,7 +4,6 @@ import { useEffect, useRef } from "react";
 
 export function InteractiveParticles() {
     const canvasRef = useRef<HTMLCanvasElement>(null);
-    // Mouse coordinates are kept in scaled (DPR) coordinates
     const mouseRef = useRef({ x: -1000, y: -1000, radius: 150 });
 
     useEffect(() => {
@@ -30,18 +29,15 @@ export function InteractiveParticles() {
             constructor(w: number, h: number, dpr: number) {
                 this.x = Math.random() * w;
                 this.y = Math.random() * h;
-                // Base velocity, scaled by dpr so it moves consistently across screens
                 this.baseVx = (Math.random() - 0.5) * 0.6 * dpr;
                 this.baseVy = (Math.random() - 0.5) * 0.6 * dpr;
                 this.vx = this.baseVx;
                 this.vy = this.baseVy;
-                // Radius scaled by dpr
                 this.radius = (Math.random() * 1.5 + 0.5) * dpr;
                 this.alpha = Math.random() * 0.5 + 0.15;
             }
 
             update(w: number, h: number, mouse: { x: number, y: number, radius: number }, dpr: number) {
-                // Smooth edge bouncing
                 if (this.x < 0 || this.x > w) {
                     this.baseVx *= -1;
                     this.vx *= -1;
@@ -53,7 +49,6 @@ export function InteractiveParticles() {
                     this.y = Math.max(0, Math.min(this.y, h));
                 }
 
-                // Mouse interaction physics
                 let dx = mouse.x - this.x;
                 let dy = mouse.y - this.y;
                 let dist = Math.sqrt(dx * dx + dy * dy);
@@ -61,22 +56,18 @@ export function InteractiveParticles() {
                 if (dist < mouse.radius) {
                     let forceDirectionX = dx / dist;
                     let forceDirectionY = dy / dist;
-                    // Stronger force as mouse gets closer
                     let force = (mouse.radius - dist) / mouse.radius;
-                    
-                    // Repelling vector (push away)
+
                     let pushX = -forceDirectionX * force * 3 * dpr;
                     let pushY = -forceDirectionY * force * 3 * dpr;
-                    
+
                     this.vx += pushX;
                     this.vy += pushY;
                 }
 
-                // Smooth friction returning to base velocity
                 this.vx += (this.baseVx - this.vx) * 0.04;
                 this.vy += (this.baseVy - this.vy) * 0.04;
 
-                // Speed limiter to prevent chaotic flying
                 let currentSpeed = Math.sqrt(this.vx * this.vx + this.vy * this.vy);
                 let maxSpeed = 4 * dpr;
                 if (currentSpeed > maxSpeed) {
@@ -84,7 +75,6 @@ export function InteractiveParticles() {
                     this.vy = (this.vy / currentSpeed) * maxSpeed;
                 }
 
-                // Apply velocity
                 this.x += this.vx;
                 this.y += this.vy;
             }
@@ -92,9 +82,8 @@ export function InteractiveParticles() {
             draw(ctx: CanvasRenderingContext2D, isDark: boolean) {
                 ctx.beginPath();
                 ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-                // Dynamically adapt color to theme
-                ctx.fillStyle = isDark 
-                    ? `rgba(255, 255, 255, ${this.alpha})` 
+                ctx.fillStyle = isDark
+                    ? `rgba(255, 255, 255, ${this.alpha})`
                     : `rgba(0, 0, 0, ${this.alpha})`;
                 ctx.fill();
             }
@@ -103,11 +92,10 @@ export function InteractiveParticles() {
         const resizeCanvas = () => {
             const rect = canvas.getBoundingClientRect();
             const dpr = window.devicePixelRatio || 1;
-            
-            // Set actual canvas size based on DPR for sharpness
+
             canvas.width = rect.width * dpr;
             canvas.height = rect.height * dpr;
-            
+
             mouseRef.current.radius = 140 * dpr;
 
             initParticles(rect.width, rect.height, dpr);
@@ -118,10 +106,9 @@ export function InteractiveParticles() {
             const canvasWidth = logicalWidth * dpr;
             const canvasHeight = logicalHeight * dpr;
 
-            // Calculate density-based particle count (fewer on mobile)
             const logicalArea = logicalWidth * logicalHeight;
-            let count = Math.floor(logicalArea / 12000); 
-            count = Math.max(20, Math.min(count, 150)); // clamp between 20 and 150
+            let count = Math.floor(logicalArea / 12000);
+            count = Math.max(20, Math.min(count, 150));
 
             for (let i = 0; i < count; i++) {
                 particles.push(new Particle(canvasWidth, canvasHeight, dpr));
@@ -129,10 +116,8 @@ export function InteractiveParticles() {
         };
 
         const animate = () => {
-            // Clear canvas
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-            // Dynamically check theme without needing React Context rerenders
             const isDark = document.documentElement.classList.contains('dark');
             const dpr = window.devicePixelRatio || 1;
 
@@ -149,7 +134,6 @@ export function InteractiveParticles() {
         const handleMouseMove = (e: MouseEvent) => {
             const rect = canvas.getBoundingClientRect();
             const dpr = window.devicePixelRatio || 1;
-            // Scale mouse coordinates to match canvas internal resolution
             mouseRef.current.x = (e.clientX - rect.left) * dpr;
             mouseRef.current.y = (e.clientY - rect.top) * dpr;
         };
@@ -159,12 +143,10 @@ export function InteractiveParticles() {
             mouseRef.current.y = -1000;
         };
 
-        // Event listeners
         window.addEventListener("resize", resizeCanvas);
         window.addEventListener("mousemove", handleMouseMove);
         window.addEventListener("mouseleave", handleMouseLeave);
-        
-        // Initial setup
+
         resizeCanvas();
         animate();
 

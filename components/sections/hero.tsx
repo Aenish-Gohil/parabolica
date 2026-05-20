@@ -2,11 +2,13 @@
 
 import { useRef, useState, useCallback } from "react";
 import { useScroll, useTransform, useMotionTemplate, motion } from "framer-motion";
+import { useLanguage } from "@/context/language-context";
 import { ArrowRight, Mouse } from "lucide-react";
 import { ContactModal } from "@/components/contact-modal";
 import { InteractiveParticles } from "@/components/3d/interactive-particles";
 
 export default function Hero() {
+    const { content } = useLanguage();
     const containerRef = useRef<HTMLDivElement>(null);
     const [contactOpen, setContactOpen] = useState(false);
 
@@ -16,6 +18,26 @@ export default function Hero() {
     const y = useTransform(scrollY, [0, 800], [0, -150]);
     const blurValue = useTransform(scrollY, [0, 800], [0, 10]);
     const filter = useMotionTemplate`blur(${blurValue}px)`;
+    const track1 = [
+        "/me.jpg",
+        "/me.jpg",
+        "/me.jpg",
+        "/me.jpg",
+        "/me.jpg",
+        "/me.jpg",
+    ];
+
+    const track2 = [
+        "/me.jpg",
+        "/me.jpg",
+        "/me.jpg",
+        "/me.jpg",
+        "/me.jpg",
+        "/me.jpg",
+    ];
+
+    const col1Images = [...track1, ...track1];
+    const col2Images = [...track2, ...track2];
 
     const scrollToProjects = useCallback(() => {
         const projectsSection = document.getElementById("projects");
@@ -27,23 +49,78 @@ export default function Hero() {
     return (
         <section
             ref={containerRef}
-            className="sticky top-0 h-screen w-full flex flex-col justify-between bg-background px-6 sm:px-12 md:px-16 pt-28 pb-12 sm:pt-32 sm:pb-16 overflow-hidden"
+            className="sticky top-0 h-screen w-full flex flex-col justify-between bg-background px-container md:px-16 pt-28 pb-12 sm:pt-32 sm:pb-16 overflow-hidden"
             id="home"
         >
-            {/* Ambient Monochromatic Star/Snow Particles */}
             <InteractiveParticles />
 
-            {/* Scroll Animating Content Container */}
+            <motion.div
+                style={{ opacity }}
+                className="absolute top-0 right-6 sm:right-12 md:right-16 lg:right-24 xl:right-36 2xl:right-48 bottom-0 h-full w-55 sm:w-65 md:w-85 lg:w-100 xl:w-110 2xl:w-120 flex gap-3 sm:gap-4 px-2 overflow-hidden z-5 pointer-events-none select-none opacity-[0.22] dark:opacity-[0.28] mix-blend-luminosity"
+            >
+                <div className="max-sm:hidden flex-1 h-full overflow-hidden relative">
+                    <motion.div
+                        animate={{ y: ["0%", "-50%"] }}
+                        transition={{
+                            ease: "linear",
+                            duration: 32,
+                            repeat: Infinity
+                        }}
+                        className="flex flex-col gap-3 sm:gap-4 pt-4"
+                    >
+                        {col1Images.map((src, idx) => (
+                            <div key={idx} className="w-full aspect-3/4 relative overflow-hidden rounded-4xl border border-border/5">
+                                <img
+                                    src={src}
+                                    alt="Portrait Up"
+                                    onError={(e) => { e.currentTarget.src = "/me.jpg"; }}
+                                    className="w-full h-full object-cover object-center grayscale contrast-[1.08] brightness-[0.8]"
+                                />
+                            </div>
+                        ))}
+                    </motion.div>
+                </div>
+
+                <div className="max-sm:opacity-50 flex-1 h-full overflow-hidden relative">
+                    <motion.div
+                        animate={{ y: ["-50%", "0%"] }}
+                        transition={{
+                            ease: "linear",
+                            duration: 32,
+                            repeat: Infinity
+                        }}
+                        className="flex flex-col gap-3 sm:gap-4 pt-4"
+                    >
+                        {col2Images.map((src, idx) => (
+                            <div key={idx} className="w-full aspect-3/4 relative overflow-hidden rounded-4xl border border-border/5">
+                                <img
+                                    src={src}
+                                    alt="Portrait Down"
+                                    onError={(e) => { e.currentTarget.src = "/me.jpg"; }}
+                                    className="w-full h-full object-cover object-center grayscale contrast-[1.08] brightness-[0.8]"
+                                />
+                            </div>
+                        ))}
+                    </motion.div>
+                </div>
+
+                <div className="absolute inset-0 bg-linear-to-t from-background via-transparent to-background pointer-events-none z-10" />
+                <div className="absolute inset-0 bg-linear-to-r from-background via-transparent to-transparent pointer-events-none z-10" />
+            </motion.div>
+
             <motion.div
                 style={{ opacity, scale, y, filter }}
-                className="relative z-20 flex-1 flex flex-col justify-between w-full h-full will-change-[opacity,transform,filter]"
+                className="relative z-20 flex-1 flex flex-col max-sm:gap-6 justify-end sm:justify-between w-full h-full will-change-[opacity,transform,filter]"
             >
-                {/* Top Bar: Role on Left, Vertical Scroll Indicator on Right */}
-                <div className="flex justify-end items-start w-full">
 
-                    {/* Vertical Scroll Indicator (Top-Right) */}
+                <div className="flex justify-between items-start w-full">
+
+                    <div className="text-4xl sm:text-6xl text-foreground/10 grunge-text rotate-90 pointer-events-none select-none">
+                    ////
+                    </div>
+
                     <div className="flex flex-col items-center gap-4">
-                        <div className="w-px h-12 bg-white/10 relative overflow-hidden">
+                        <div className="w-px h-12 bg-border relative overflow-hidden">
                             <motion.div
                                 className="absolute top-0 left-0 w-full h-1/2 bg-foreground"
                                 animate={{
@@ -62,52 +139,51 @@ export default function Hero() {
                     </div>
                 </div>
 
-                {/* Center: Massive Bold Typography Name */}
-                <div className="w-full my-auto flex flex-col justify-center">
+                <div className="w-full sm:my-auto flex flex-col justify-center relative z-20 mix-blend-difference">
                     <div className="overflow-hidden">
                         <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl 2xl:text-[200px] font-black tracking-tighter leading-[0.85] text-foreground uppercase whitespace-nowrap">
-                            Hello <br />
-                            World
+                            Kintaro
+                            <br />
+                            <span className="text-foreground/80">
+                                Portfolio
+                            </span>
                         </h1>
                     </div>
                 </div>
 
-                {/* Bottom Bar: Description & Buttons on Left, Interactive Chips on Right */}
-                <div className="w-full grid grid-cols-1 md:grid-cols-12 gap-8 items-end">
-                    {/* Left Column: Description & Buttons */}
-                    <div className="md:col-span-6 lg:col-span-5 space-y-6">
-                        <p className="text-sm sm:text-lg 2xl:text-xl text-muted-foreground font-light leading-relaxed max-w-xl">
-                            Istanbul raised, Turkey based. Building high-performance full-stack web applications, custom lightweight tools, and interactive digital solutions.
+                <div className="w-full grid grid-cols-1 md:grid-cols-12 gap-8 items-end relative z-20">
+                    <div className="md:col-span-6 space-y-6 sm:space-y-10">
+                        <p className="sm:text-lg 2xl:text-xl text-muted-foreground font-light leading-relaxed max-w-xl mix-blend-difference">
+                            {content.about.description}
                         </p>
 
-                        {/* Call to action buttons from the first design */}
-                        <div className="flex flex-wrap items-center gap-4">
+                        <div className="flex flex-col sm:flex-row flex-wrap sm:items-center gap-4">
                             <button
                                 onClick={() => setContactOpen(true)}
-                                className="group relative flex h-12 cursor-pointer items-center justify-center overflow-hidden rounded-full border border-border/50 bg-foreground px-6 text-background transition-all duration-500 ease-out hover:bg-background hover:border-foreground/30 hover:text-foreground shadow-2xl hover:-translate-y-0.5"
+                                className="w-fit group relative flex h-12 xl:h-16 cursor-pointer items-center justify-center overflow-hidden rounded-full border border-border/50 bg-foreground px-6 xl:px-10 text-background transition-all duration-500 ease-out hover:bg-background hover:border-foreground/30 hover:text-foreground shadow-2xl hover:-translate-y-0.5"
                             >
                                 <div className="absolute inset-0 flex h-full w-full justify-center -translate-x-full -skew-x-12 group-hover:duration-1000 group-hover:translate-x-full">
                                     <div className="relative h-full w-8 bg-background/20 dark:bg-foreground/10" />
                                 </div>
-                                <span className="relative z-10 flex items-center gap-2 text-xs font-semibold tracking-[0.15em] uppercase">
-                                    Connect
-                                    <ArrowRight className="w-3.5 h-3.5 transition-transform duration-500 group-hover:translate-x-1" />
+                                <span className="relative z-10 flex items-center gap-2 xl:gap-3 text-xs xl:text-base font-semibold tracking-[0.15em] uppercase">
+                                    {content.hero.cta_primary}
+                                    <ArrowRight className="w-3.5 xl:w-5 h-3.5 xl:h-5 transition-transform duration-500 group-hover:translate-x-1" />
                                 </span>
                             </button>
 
                             <button
                                 onClick={scrollToProjects}
-                                className="group relative flex h-12 cursor-pointer items-center justify-center px-6 text-muted-foreground transition-all duration-500 hover:text-foreground hover:bg-secondary/15 rounded-full border border-border sm:border-transparent hover:border-border/30 backdrop-blur-sm"
+                                className="w-fit group relative flex h-12 xl:h-16 cursor-pointer items-center justify-center px-6 xl:px-10 text-muted-foreground transition-all duration-500 hover:text-foreground hover:bg-secondary/15 rounded-full border border-border sm:border-transparent hover:border-border/30 backdrop-blur-sm"
                             >
-                                <span className="relative z-10 text-xs font-semibold tracking-[0.15em] uppercase flex items-center gap-2">
-                                    <Mouse className="w-3.5 h-3.5 opacity-50 group-hover:opacity-100 transition-opacity" />
-                                    Explore Works
+                                <span className="relative z-10 text-xs xl:text-base font-semibold tracking-[0.15em] uppercase flex items-center gap-2 xl:gap-3">
+                                    <Mouse className="w-3.5 xl:w-5 h-3.5 xl:h-5 opacity-50 group-hover:opacity-100 transition-opacity" />
+                                    {content.hero.cta_secondary}
                                 </span>
                             </button>
                         </div>
                     </div>
 
-                    <div className="max-lg:hidden md:col-span-6 lg:col-span-7 flex flex-col sm:justify-end gap-3 items-end">
+                    <div className="max-lg:hidden md:col-span-6 flex flex-col sm:justify-end gap-3 items-end">
                         <button
                             onClick={() => setContactOpen(true)}
                             className="group flex items-center gap-2.5 px-4 py-2.5 rounded-full border border-green-500/20 bg-green-500/5 hover:bg-green-500/10 hover:border-green-500/35 transition-all text-left cursor-pointer"
@@ -121,7 +197,7 @@ export default function Hero() {
                             </span>
                         </button>
 
-                        <div className="px-4 py-2.5 rounded-full border border-white/5 bg-white/[0.02] text-left flex items-center">
+                        <div className="px-4 py-2.5 rounded-full border border-border/50 bg-foreground/2 text-left flex items-center">
                             <span className="text-[10px] font-mono tracking-wider text-muted-foreground uppercase">
                                 FULL-STACK DEVELOPER
                             </span>
