@@ -6,44 +6,49 @@ import Roadmap from "@/components/sections/roadmap";
 import About from "@/components/sections/about";
 import Contact from "@/components/sections/contact";
 import ScrollProgress from "@/components/scroll-progress";
+import { BackgroundCar } from "@/components/background-car";
 
 export default function Home() {
   return (
     <>
       <ScrollProgress />
 
-      <main className="bg-background relative">
+      <main className="relative min-h-screen">
+        {/* Background Car - Moved inside and adjusted z-index */}
+        <BackgroundCar />
 
-        <Hero />
+        <div className="relative z-10 w-full">
+          <Hero />
 
-        <div className="relative z-10 bg-background border-t border-border">
-          <section id="about">
-            <About />
-          </section>
+          <div className="relative z-10 bg-background/80 backdrop-blur-sm border-t border-border">
+            <section id="about">
+              <About />
+            </section>
 
-          <ManifestoFlow />
+            <ManifestoFlow />
 
-          <section id="stack">
-            <Stack />
-          </section>
+            <section id="stack">
+              <Stack />
+            </section>
 
-          <ManifestoFlow reverse />
+            <ManifestoFlow reverse />
 
-          <section id="projects">
-            <Projects />
-          </section>
+            <section id="projects">
+              <Projects />
+            </section>
 
-          <ManifestoFlow />
+            <ManifestoFlow />
 
-          <section id="roadmap">
-            <Roadmap />
-          </section>
+            <section id="roadmap">
+              <Roadmap />
+            </section>
 
-          <ManifestoFlow reverse />
+            <ManifestoFlow reverse />
 
-          <section id="contact">
-            <Contact />
-          </section>
+            <section id="contact">
+              <Contact />
+            </section>
+          </div>
         </div>
       </main >
     </>

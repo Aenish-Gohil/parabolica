@@ -228,4 +228,30 @@
     @apply text-foreground font-bold;
   }
 
+  /* Custom Logo Styling */
+  .logo-branding {
+    @apply transition-all duration-700 relative cursor-pointer h-10 sm:h-16 w-auto object-contain;
+    filter: drop-shadow(0 0 10px rgba(255, 255, 255, 0));
+  }
+
+  .logo-branding:hover {
+    @apply scale-105;
+    filter: drop-shadow(0 0 15px rgba(255, 255, 255, 0.4));
+  }
+
+  .logo-branding {
+    mask-image: linear-gradient(
+      60deg, 
+      rgba(0,0,0,1) 40%, 
+      rgba(0,0,0,0.4) 45%, 
+      rgba(0,0,0,1) 50%
+    );
+    mask-size: 300%;
+    animation: sweep 5s infinite linear;
+  }
+
+  @keyframes sweep {
+    0% { mask-position: 200%; }
+    100% { mask-position: -100%; }
+  }
 }

@@ -8,27 +8,27 @@
         "contact": "Contact"
     },
     "hero": {
-        "title": "I <span class='highlight-text-primary'>help</span> founders turn <span class='highlight-text-primary'> ideas</span> into seamless digital experiences",
-        "cta_primary": "Connect",
-        "cta_secondary": "Explore Works",
-        "stats": "<span class='highlight-text-tertiary'>Startup</span> Ready Solutions",
-        "scroll": "Scroll Down"
+        "title": "Welcome to <span class='highlight-text-primary'>Parabolica</span> — The Ultimate <span class='highlight-text-primary'>VR</span> & <span class='highlight-text-primary'>F1</span> Racing Zone",
+        "cta_primary": "Book Now",
+        "cta_secondary": "Explore Zones",
+        "stats": "<span class='highlight-text-tertiary'>Immersive</span> Reality Experience",
+        "scroll": "Scroll to Experience"
     },
     "about": {
-        "title": "About",
-        "intro": "A developer who grows through <span class='highlight-text-primary'>self-driven projects</span> and turns ideas into <span class='highlight-text-secondary'>real products</span>.",
-        "description": "A <span class='highlight-text-primary'>web development-focused</span> mindset; building on both frontend and backend, learning new technologies through <span class='highlight-text-secondary'>hands-on experimentation</span>, and prioritizing <span class='highlight-text-tertiary'>maintainable code</span>.",
-        "full": "I have been actively involved in software development for the past few years, mostly improving myself through my own projects. Turning an idea into a working product is the part I enjoy the most.<br/><br/>I mainly work in web development. I have built projects using technologies such as React, Next.js, Node.js, Express, and Laravel, working on both frontend and backend. I also gained experience in data management with MongoDB and PostgreSQL. Additionally, I developed desktop applications using C# and WinForms, and more recently started experimenting with lightweight modern desktop apps using Tauri (Rust).<br/><br/>Depending on the need, I also work with different tools. For example, I have built projects involving media processing using FFmpeg. I enjoy exploring new technologies, and I generally believe the best way to learn something is by using it directly.<br/><br/>In my projects, I don’t consider it enough for something to just “work”; I try to keep things as clean, understandable, and maintainable as possible. When I face a problem, instead of quickly moving on, I prefer to dig into it and understand how it actually works.<br/><br/>My current goal is to work on larger, real-world impactful projects and further improve myself, especially in backend development and system design.",
-        "cta": "Read Full Version"
+        "title": "Our Reality",
+        "intro": "<span class='highlight-text-primary'>Parabolica</span> is where high-octane racing meets <span class='highlight-text-secondary'>next-gen virtual reality</span>.",
+        "description": "Step into the <span class='highlight-text-primary'>fastest simulators</span> on the planet and explore <span class='highlight-text-secondary'>limitless digital worlds</span> through our professional VR arena.",
+        "full": "Located at the intersection of technology and adrenaline, Parabolica offers a premier gaming experience for enthusiasts and professionals alike. Our facility is equipped with state-of-the-art F1 Motion Simulators that replicate the G-forces and precision of real-world racing.<br/><br/>But the journey doesn't stop at the track. Our VR Game Zone features a vast library of immersive experiences, from competitive tactical shooters to breathtaking cinematic adventures. We also specialize in FPV drone pilot training and exhibitions, bringing the sky to your fingertips.<br/><br/>Whether you're looking for a solo challenge, a corporate team-building event, or the ultimate destination for your next party, Parabolica provides an atmosphere that is both high-tech and welcoming.<br/><br/>Our goal is to push the boundaries of what is possible in local entertainment, merging physical thrill with digital mastery.",
+        "cta": "Learn Our Story"
     },
     "manifesto": {
         "items": [
-            "RADICAL TRANSPARENCY",
-            "INTENTIONAL MINIMALISM",
-            "ARCHITECTURAL INTEGRITY",
-            "FIRST PRINCIPLES THINKING",
-            "PERFORMANCE WITHOUT COMPROMISE",
-            "SCALABLE VISION"
+            "TOTAL IMMERSION",
+            "PRECISION RACING",
+            "NEXT-GEN HARDWARE",
+            "UNLIMITED ADRENALINE",
+            "COMMUNITY DRIVEN",
+            "FUTURE OF GAMING"
         ]
     },
     "stack": {
