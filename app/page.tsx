@@ -1,9 +1,10 @@
 import Projects from "@/components/sections/projects";
 import ManifestoFlow from "@/components/manifesto-flow";
 import PhotoScroll from "@/components/sections/photo-scroll";
-import Events from "@/components/sections/events";
+import DeckExplorer from "@/components/sections/deck-explorer";
 import About from "@/components/sections/about";
-import Contact from "@/components/sections/contact";
+import Booking from "@/components/sections/booking";
+import Footer from "@/components/footer";
 import ScrollProgress from "@/components/scroll-progress";
 import LandingHero from "@/components/sections/landing-hero";
 import { IntroSequence } from "@/components/intro-sequence";
@@ -21,11 +22,7 @@ export default function Home() {
           <div className="relative z-10 bg-background/80 backdrop-blur-sm border-t border-border">
             <section id="about">
               <About />
-            </section>
-
-            <ManifestoFlow />
-
-            <section id="gallery">
+              <ManifestoFlow />
               <PhotoScroll />
             </section>
 
@@ -37,18 +34,17 @@ export default function Home() {
 
             <ManifestoFlow />
 
-            <section id="roadmap">
-              <Events />
+            <section id="events">
+              <DeckExplorer />
             </section>
 
             <ManifestoFlow reverse />
 
-            <section id="contact">
-              <Contact />
-            </section>
+            <Booking />
           </div>
         </div>
       </main>
+      <Footer />
     </>
   );
 }

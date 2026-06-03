@@ -50,14 +50,55 @@ export default function Navbar() {
     return startWidth - ratio * (startWidth - containerWidth);
   });
 
+  const [activeSection, setActiveSection] = useState("home");
+
   const navLinks = [
-    { name: content.nav.home, href: "/" },
-    { name: content.nav.about, href: "/#about" },
-    { name: content.nav.projects, href: "/#projects" },
-    { name: content.nav.stack, href: "/#stack" },
-    { name: content.nav.roadmap, href: "/#roadmap" },
-    { name: content.nav.contact, href: "/#contact" },
+    { name: content.nav.home, href: "/#home", id: "home" },
+    { name: content.nav.about, href: "/#about", id: "about" },
+    { name: content.nav.projects, href: "/#projects", id: "projects" },
+    { name: content.nav.events, href: "/#events", id: "events" },
+    { name: content.nav.booking, href: "/#booking", id: "booking" },
   ];
+
+  // Active Section Detection (Scroll-based)
+  useEffect(() => {
+    const handleScroll = () => {
+      const sectionIds = ["home", "about", "projects", "events", "booking", "contact"];
+      const scrollPos = window.scrollY;
+      
+      // Default to home if at the very top
+      if (scrollPos < 100) {
+        setActiveSection("home");
+        return;
+      }
+
+      let currentSection = "";
+      let maxVisibility = 0;
+
+      sectionIds.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+          const rect = el.getBoundingClientRect();
+          const visibleHeight = Math.min(rect.bottom, window.innerHeight) - Math.max(rect.top, 0);
+          
+          if (visibleHeight > maxVisibility) {
+            maxVisibility = visibleHeight;
+            currentSection = id;
+          }
+        }
+      });
+
+      if (currentSection) {
+        setActiveSection(currentSection);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    // Run once on mount
+    handleScroll();
+
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   useEffect(() => {
     if (typeof window !== "undefined") {
@@ -90,24 +131,26 @@ export default function Navbar() {
 
   const scrollToSection = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     const isHomePage = typeof window !== "undefined" && window.location.pathname === "/";
-    const isHomeLink = href === "/" || href === "/#home" || href === "#home";
+    const targetId = href.includes("#") ? href.split("#")[1] : "home";
 
-    // If we are on the home page and clicking a home link OR an internal anchor
-    if (isHomePage && (isHomeLink || href.includes("#"))) {
+    // If we are on the home page, scroll smoothly
+    if (isHomePage) {
       e.preventDefault();
-      const targetId = href.includes("#") ? href.split("#")[1] : "home";
-      const elem = targetId === "home" ? null : document.getElementById(targetId);
-
       setIsMenuOpen(false);
-
+      
+      // Ensure lenis is started before scrolling
       if (lenis) {
+        lenis.start();
+        const elem = targetId === "home" ? null : document.getElementById(targetId);
+        
         lenis.scrollTo(targetId === "home" ? 0 : (elem || 0), {
           offset: targetId === "home" ? 0 : -80,
           duration: 1.5,
+          lock: true,
         });
       }
     } else {
-      // Allow default Link behavior for cross-page navigation
+      // If we are on a different page (like a deck page), navigate to home with hash
       setIsMenuOpen(false);
     }
   };
@@ -211,7 +254,7 @@ export default function Navbar() {
               <nav className="flex flex-col gap-4 sm:gap-6 lg:gap-8">
                 {navLinks.map((link, i) => (
                   <motion.div
-                    key={link.name}
+                    key={link.id}
                     initial={{ opacity: 0, x: 50 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.4 + (i * 0.08), duration: 0.6 }}
@@ -219,12 +262,18 @@ export default function Navbar() {
                     <Link
                       href={link.href}
                       onClick={(e) => scrollToSection(e, link.href)}
-                      className="group flex items-center gap-4 text-4xl sm:text-6xl lg:text-8xl font-black uppercase tracking-tighter hover:text-[#ffd700] transition-colors duration-300"
+                      className={`group flex items-center gap-4 text-4xl sm:text-6xl lg:text-8xl font-black uppercase tracking-tighter transition-colors duration-300 ${activeSection === link.id ? "text-[#00ffd2]" : "text-white hover:text-[#00ffd2]"}`}
                     >
-                      <span className="text-xl sm:text-2xl font-light text-white/30 group-hover:text-[#ffd700]/50 transition-colors">
+                      <span className={`text-xl sm:text-2xl font-light transition-colors ${activeSection === link.id ? "text-[#00ffd2]/50" : "text-white/30 group-hover:text-[#00ffd2]/50"}`}>
                         0{i + 1}
                       </span>
                       {link.name}
+                      {activeSection === link.id && (
+                        <motion.div 
+                          layoutId="activeCircle"
+                          className="w-3 h-3 rounded-full bg-[#00ffd2] ml-4 hidden sm:block shadow-[0_0_15px_rgba(0,255,210,0.8)]"
+                        />
+                      )}
                     </Link>
                   </motion.div>
                 ))}

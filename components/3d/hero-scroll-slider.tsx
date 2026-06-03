@@ -98,12 +98,12 @@ function HeroSlide({ pair, i, progress }: { pair: typeof PAIRS[0], i: number, pr
         <motion.div 
             initial={{ opacity: 0, y: 40 }}
             animate={{ opacity: 1, y: 0 }}
-            className="absolute left-[-80%] sm:left-[-100%] top-1/2 -translate-y-1/2 w-[220%] sm:w-[200%] pointer-events-none mix-blend-difference"
+            className="absolute left-1/2 -translate-x-1/2 bottom-[-40%] sm:bottom-auto sm:left-[-100%] sm:top-1/2 sm:-translate-y-1/2 sm:translate-x-0 w-[95vw] sm:w-[200%] pointer-events-none mix-blend-difference text-center sm:text-left h-fit"
         >
-            <h1 className="text-4xl xs:text-5xl sm:text-7xl md:text-8xl lg:text-9xl xl:text-[140px] font-black tracking-tighter leading-[0.85] text-white uppercase text-left">
+            <h1 className="text-5xl xs:text-6xl sm:text-7xl md:text-8xl lg:text-9xl xl:text-[140px] font-black tracking-tighter leading-[0.85] text-white uppercase">
                 PARA<br />BOLICA
             </h1>
-            <p className="mt-4 sm:mt-8 text-xs sm:text-lg text-white/60 font-light max-w-xs sm:max-w-md uppercase tracking-widest leading-relaxed">
+            <p className="mt-4 sm:mt-8 text-[10px] xs:text-xs sm:text-lg text-white/60 font-light max-w-[280px] xs:max-w-xs sm:max-w-md uppercase tracking-widest leading-relaxed mx-auto sm:mx-0">
                 Experience the next generation of F1 simulation and virtual reality.
             </p>
         </motion.div>

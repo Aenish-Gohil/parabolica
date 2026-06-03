@@ -3,8 +3,8 @@
         "home": "HOME",
         "about": "ABOUT",
         "projects": "EXPERIENCES",
-        "stack": "TECH",
-        "roadmap": "EVENTS",
+        "events": "EVENTS",
+        "booking": "BOOKING",
         "contact": "CONTACT"
     },
     "hero": {
