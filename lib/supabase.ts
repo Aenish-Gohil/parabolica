@@ -9,4 +9,23 @@ console.log("KEY PRESENT:", !!supabaseAnonKey);
 console.log("KEY LENGTH:", supabaseAnonKey.length);
 console.log("---------------------------");
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+// ✅ Isolated Supabase Clients
+// We use different storage keys to ensure Admin and User logins are completely independent.
+
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+    auth: {
+        storageKey: 'parabolica-user-auth',
+        autoRefreshToken: true,
+        persistSession: true,
+        detectSessionInUrl: true
+    }
+});
+
+export const supabaseAdmin = createClient(supabaseUrl, supabaseAnonKey, {
+    auth: {
+        storageKey: 'parabolica-admin-auth',
+        autoRefreshToken: true,
+        persistSession: true,
+        detectSessionInUrl: true
+    }
+});

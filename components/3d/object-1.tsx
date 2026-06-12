@@ -75,7 +75,7 @@ function MorphBlob() {
     const { viewport } = useThree();
     const frameCount = useRef(0);
 
-    const geometry = useMemo(() => new THREE.IcosahedronGeometry(1.6, 28), []);
+    const geometry = useMemo(() => new THREE.IcosahedronGeometry(1.6, 16), []);
     const originalPositions = useMemo(
         () => new Float32Array(geometry.attributes.position.array),
         [geometry]

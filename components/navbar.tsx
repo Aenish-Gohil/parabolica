@@ -62,7 +62,12 @@ export default function Navbar() {
 
   // Active Section Detection (Scroll-based)
   useEffect(() => {
+    let lastScrollTime = 0;
     const handleScroll = () => {
+      const now = Date.now();
+      if (now - lastScrollTime < 100) return;
+      lastScrollTime = now;
+
       const sectionIds = ["home", "about", "projects", "events", "booking", "contact"];
       const scrollPos = window.scrollY;
       

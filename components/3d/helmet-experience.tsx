@@ -93,7 +93,7 @@ function LiquidBlobMask({ onTextureUpdate }: { onTextureUpdate: (tex: THREE.Text
 }
 
 function Experience() {
-    const [blobTexture, setBlobTexture] = useState<THREE.Texture | null>(null);
+    const blobTextureRef = useRef<THREE.Texture | null>(null);
     const { scene: headScene } = useGLTF("https://threejs.org/examples/models/gltf/LeePerrySmith/LeePerrySmith.glb");
     const { scene: helmetScene } = useGLTF("https://threejs.org/examples/models/gltf/DamagedHelmet/glTF/DamagedHelmet.gltf");
     
@@ -111,68 +111,69 @@ function Experience() {
         }
     }, [headScene]);
 
+    const redBullMaterial = useMemo(() => {
+        const mat = new THREE.MeshStandardMaterial({
+            color: 0x0c1d36, // Navy blue (Red Bull base)
+            metalness: 0.8,
+            roughness: 0.2,
+        });
+        
+        (mat as any).onBeforeCompile = (shader: any) => {
+            shader.uniforms.texBlob = { value: null };
+            shader.uniforms.texReveal = { value: revealTexture };
+            shader.vertexShader = `
+                varying vec4 vPosProj;
+                varying vec2 vUvLocal;
+                ${shader.vertexShader}
+            `.replace(
+                `#include <project_vertex>`,
+                `#include <project_vertex>
+                vPosProj = gl_Position;
+                vUvLocal = uv;
+                `
+            );
+            shader.fragmentShader = `
+                uniform sampler2D texBlob;
+                uniform sampler2D texReveal;
+                varying vec4 vPosProj;
+                varying vec2 vUvLocal;
+                ${shader.fragmentShader}
+            `.replace(
+                `#include <clipping_planes_fragment>`,
+                `
+                vec2 blobUV = ((vPosProj.xy / vPosProj.w) + 1.0) * 0.5;
+                vec4 blobData = texture(texBlob, blobUV);
+                
+                // Discard the helmet entirely if it's not under the hover "blob"
+                if (blobData.r < 0.01) discard;
+                
+                // Within the blob, show the image.png texture
+                vec4 revealedColor = texture(texReveal, vUvLocal);
+                diffuseColor.rgb = revealedColor.rgb;
+                
+                #include <clipping_planes_fragment>
+                `
+            );
+            mat.userData.shader = shader;
+        };
+        return mat;
+    }, [revealTexture]);
+
     useEffect(() => {
         const helmet = helmetScene.children[0] as THREE.Mesh;
         if (revealTexture) {
             revealTexture.flipY = false;
         }
 
-        if (helmet && helmet.material) {
-            const redBullMaterial = new THREE.MeshStandardMaterial({
-                color: 0x0c1d36, // Navy blue (Red Bull base)
-                metalness: 0.8,
-                roughness: 0.2,
-            });
-            
-            (redBullMaterial as any).onBeforeCompile = (shader: any) => {
-                shader.uniforms.texBlob = { value: blobTexture };
-                shader.uniforms.texReveal = { value: revealTexture };
-                shader.vertexShader = `
-                    varying vec4 vPosProj;
-                    varying vec2 vUvLocal;
-                    ${shader.vertexShader}
-                `.replace(
-                    `#include <project_vertex>`,
-                    `#include <project_vertex>
-                    vPosProj = gl_Position;
-                    vUvLocal = uv;
-                    `
-                );
-                shader.fragmentShader = `
-                    uniform sampler2D texBlob;
-                    uniform sampler2D texReveal;
-                    varying vec4 vPosProj;
-                    varying vec2 vUvLocal;
-                    ${shader.fragmentShader}
-                `.replace(
-                    `#include <clipping_planes_fragment>`,
-                    `
-                    vec2 blobUV = ((vPosProj.xy / vPosProj.w) + 1.0) * 0.5;
-                    vec4 blobData = texture(texBlob, blobUV);
-                    
-                    // Discard the helmet entirely if it's not under the hover "blob"
-                    if (blobData.r < 0.01) discard;
-                    
-                    // Within the blob, show the image.png texture
-                    vec4 revealedColor = texture(texReveal, vUvLocal);
-                    diffuseColor.rgb = revealedColor.rgb;
-                    
-                    #include <clipping_planes_fragment>
-                    `
-                );
-                redBullMaterial.userData.shader = shader;
-            };
+        if (helmet) {
             helmet.material = redBullMaterial;
         }
-    }, [helmetScene, blobTexture, revealTexture]);
+    }, [helmetScene, redBullMaterial, revealTexture]);
 
     useFrame((state) => {
-        const currentHelmet = helmetScene.children[0] as THREE.Mesh;
-        if (currentHelmet && currentHelmet.material) {
-            const mat = currentHelmet.material as any;
-            if (mat.userData.shader) {
-                mat.userData.shader.uniforms.texBlob.value = blobTexture;
-            }
+        if (redBullMaterial.userData.shader) {
+            redBullMaterial.userData.shader.uniforms.texBlob.value = blobTextureRef.current;
+            redBullMaterial.userData.shader.uniforms.texReveal.value = revealTexture;
         }
 
         const time = state.clock.getElapsedTime();
@@ -191,7 +192,7 @@ function Experience() {
                 position={[0, 1.45, 0.7]} 
                 rotation={[Math.PI * 0.5, 0, 0]}
             />
-            <LiquidBlobMask onTextureUpdate={setBlobTexture} />
+            <LiquidBlobMask onTextureUpdate={(tex) => { blobTextureRef.current = tex; }} />
         </group>
     );
 }

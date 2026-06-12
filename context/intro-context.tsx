@@ -22,15 +22,19 @@ export function IntroProvider({ children }: { children: React.ReactNode }) {
     setIsFirstMount(false);
   }, []);
 
-  const setIntroPlayed = (val: boolean) => {
-    if (val) {
-      sessionStorage.setItem("intro_played", "true");
-    }
-    setIntroPlayedState(val);
-  };
+  const value = React.useMemo(() => ({
+    introPlayed,
+    setIntroPlayed: (val: boolean) => {
+      if (val) {
+        sessionStorage.setItem("intro_played", "true");
+      }
+      setIntroPlayedState(val);
+    },
+    isFirstMount
+  }), [introPlayed, isFirstMount]);
 
   return (
-    <IntroContext.Provider value={{ introPlayed, setIntroPlayed, isFirstMount }}>
+    <IntroContext.Provider value={value}>
       {children}
     </IntroContext.Provider>
   );
