@@ -15,7 +15,10 @@ export function IntroProvider({ children }: { children: React.ReactNode }) {
   const [isFirstMount, setIsFirstMount] = useState(true);
 
   useEffect(() => {
-    // Removed sessionStorage to allow intro on every reload
+    const hasPlayed = sessionStorage.getItem("introPlayed");
+    if (hasPlayed === "true") {
+      setIntroPlayedState(true);
+    }
     setIsFirstMount(false);
   }, []);
 
@@ -23,6 +26,7 @@ export function IntroProvider({ children }: { children: React.ReactNode }) {
     introPlayed,
     setIntroPlayed: (val: boolean) => {
       setIntroPlayedState(val);
+      if (val) sessionStorage.setItem("introPlayed", "true");
     },
     isFirstMount
   }), [introPlayed, isFirstMount]);
