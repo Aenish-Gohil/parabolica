@@ -59,10 +59,21 @@ export default function RootLayout({
         {/* Script to remove the guard once IntroSequence is ready or if it fails to load */}
         <script dangerouslySetInnerHTML={{ __html: `
           window.addEventListener('load', () => {
-             // We keep it for a bit so IntroSequence can take over
+             const guard = document.getElementById('hydration-guard');
+             if (!guard) return;
+
+             // Instant removal if intro already played in this session
+             try {
+               if (sessionStorage.getItem('introPlayed') === 'true') {
+                 guard.style.display = 'none';
+                 guard.remove();
+                 return;
+               }
+             } catch (e) {}
+
+             // Normal delay for first-time intro
              setTimeout(() => {
-               const guard = document.getElementById('hydration-guard');
-               if (guard) guard.style.opacity = '0';
+               guard.style.opacity = '0';
                setTimeout(() => guard?.remove(), 500);
              }, 800);
           });

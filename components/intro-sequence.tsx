@@ -192,8 +192,6 @@ export function IntroSequence() {
   useEffect(() => {
     if (introPlayed) {
       setShouldRender(false);
-      // Remove guard if intro is already played (though context handles it now)
-      document.getElementById('hydration-guard')?.remove();
     }
   }, [introPlayed]);
 

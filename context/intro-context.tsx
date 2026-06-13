@@ -15,9 +15,13 @@ export function IntroProvider({ children }: { children: React.ReactNode }) {
   const [isFirstMount, setIsFirstMount] = useState(true);
 
   useEffect(() => {
-    const hasPlayed = sessionStorage.getItem("introPlayed");
-    if (hasPlayed === "true") {
-      setIntroPlayedState(true);
+    try {
+      const hasPlayed = sessionStorage.getItem("introPlayed");
+      if (hasPlayed === "true") {
+        setIntroPlayedState(true);
+      }
+    } catch (e) {
+      console.warn("Session storage access failed:", e);
     }
     setIsFirstMount(false);
   }, []);
@@ -26,7 +30,11 @@ export function IntroProvider({ children }: { children: React.ReactNode }) {
     introPlayed,
     setIntroPlayed: (val: boolean) => {
       setIntroPlayedState(val);
-      if (val) sessionStorage.setItem("introPlayed", "true");
+      try {
+        if (val) sessionStorage.setItem("introPlayed", "true");
+      } catch (e) {
+        console.warn("Could not save to session storage:", e);
+      }
     },
     isFirstMount
   }), [introPlayed, isFirstMount]);
