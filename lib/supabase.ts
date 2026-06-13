@@ -1,13 +1,14 @@
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
+// ✅ Build-Safe Environment Check
+// If variables are missing during Vercel pre-rendering, we use placeholders 
+// to prevent the build from crashing. Real values will be used at runtime.
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || 'https://placeholder.supabase.co';
+const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || 'placeholder-key';
 
-console.log("--- SUPABASE DEBUG INFO ---");
-console.log("TARGET URL:", supabaseUrl);
-console.log("KEY PRESENT:", !!supabaseAnonKey);
-console.log("KEY LENGTH:", supabaseAnonKey.length);
-console.log("---------------------------");
+if (!process.env.NEXT_PUBLIC_SUPABASE_URL) {
+    console.warn("⚠️ WARNING: NEXT_PUBLIC_SUPABASE_URL is missing. Using build placeholder.");
+}
 
 // ✅ Isolated Supabase Clients
 // We use different storage keys to ensure Admin and User logins are completely independent.
