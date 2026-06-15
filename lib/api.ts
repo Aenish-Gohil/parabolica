@@ -28,17 +28,33 @@ async function getAuthHeader(): Promise<Record<string, string>> {
 
 async function apiRequest(path: string, options: RequestInit = {}) {
     const authHeaders = await getAuthHeader();
-    const res = await fetch(`${API_BASE}${path}`, {
-        ...options,
-        headers: {
-            "Content-Type": "application/json",
-            ...authHeaders,
-            ...options.headers,
-        },
-    });
-    const json = await res.json();
-    if (!res.ok) throw new Error(json.detail || "API Error");
-    return json;
+    
+    // Add a 45-second timeout since Render free tier can be slow
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 45000);
+
+    try {
+        const res = await fetch(`${API_BASE}${path}`, {
+            ...options,
+            signal: controller.signal,
+            headers: {
+                "Content-Type": "application/json",
+                ...authHeaders,
+                ...options.headers,
+            },
+        });
+        
+        const json = await res.json();
+        if (!res.ok) throw new Error(json.detail || "API Error");
+        return json;
+    } catch (err: any) {
+        if (err.name === 'AbortError') {
+            throw new Error("MISSION TIMEOUT: Mission Control is taking too long to respond. Please try again.");
+        }
+        throw err;
+    } finally {
+        clearTimeout(timeoutId);
+    }
 }
 
 // ─── Booking API ──────────────────────────────────────────────────────────────
