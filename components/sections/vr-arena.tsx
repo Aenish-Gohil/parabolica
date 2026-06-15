@@ -20,7 +20,12 @@ export default function VRArena() {
             <div className="absolute inset-0 pointer-events-none z-0">
                 <div className="absolute inset-0 bg-[radial-gradient(ellipse_100%_60%_at_50%_100%,rgba(255,107,0,0.08)_0%,transparent_70%)]" />
                 <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_40%_at_50%_0%,rgba(0,255,149,0.04)_0%,transparent_70%)]" />
-                <div className="absolute inset-0 bg-[url('/intro/scanlines.png')] opacity-[0.02]" />
+                <div 
+                    className="absolute inset-0 opacity-[0.02] pointer-events-none"
+                    style={{
+                        backgroundImage: "repeating-linear-gradient(0deg, #fff 0px, #fff 1px, transparent 1px, transparent 4px)",
+                    }}
+                />
             </div>
 
             <div className="container mx-auto px-6 relative z-10">

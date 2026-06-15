@@ -77,7 +77,7 @@
                 "category": "MOTION SIMULATION",
                 "year": "Active",
                 "description": "Experience professional-grade motion simulators and ultra-realistic F1 racing physics. Compete in world-class leagues.",
-                "image": "/assets/projects/f1.jpg"
+                "image": "/assets/menu/f1.png"
             },
             {
                 "id": "vr",
@@ -85,7 +85,7 @@
                 "category": "IMMERSIVE REALITY",
                 "year": "Active",
                 "description": "Enter the arena. 360-degree free-roam VR with haptic feedback and competitive team-based combat modules.",
-                "image": "/assets/projects/vr.jpg"
+                "image": "/assets/menu/vr.png"
             },
             {
                 "id": "fpv",
@@ -93,7 +93,7 @@
                 "category": "AERIAL PILOTING",
                 "year": "Training",
                 "description": "Master the art of FPV flight in our specialized training facility. Indoor courses and professional pilot certification.",
-                "image": "/assets/projects/fpv.jpg"
+                "image": "/assets/menu/fpv.png"
             },
             {
                 "id": "others",
@@ -101,7 +101,7 @@
                 "category": "CURATED COLLECTION",
                 "year": "Ongoing",
                 "description": "A diverse collection of high-tech and retro games, carefully selected for the ultimate enthusiast experience.",
-                "image": "/assets/projects/others.jpg"
+                "image": "/vr_arena_hero.png"
             }
         ]
     },

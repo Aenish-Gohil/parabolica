@@ -223,13 +223,6 @@ export function IntroSequence() {
     document.body.style.overflow = "";
     setIntroPlayed(true);
     setShouldRender(false);
-    
-    // Immediate visual reveal
-    const guard = document.getElementById('hydration-guard');
-    if (guard) {
-      guard.style.opacity = '0';
-      setTimeout(() => guard.remove(), 100);
-    }
   };
 
   // Zone timer

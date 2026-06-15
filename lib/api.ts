@@ -3,13 +3,25 @@ const API_BASE = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8090";
 import { supabase, supabaseAdmin } from "@/lib/supabase";
 
 async function getAuthHeader(): Promise<Record<string, string>> {
-    // Check Admin storage first
-    const { data: { session: adminSession } } = await supabaseAdmin.auth.getSession();
-    if (adminSession) return { Authorization: `Bearer ${adminSession.access_token}` };
+    try {
+        // Check Admin storage first
+        const { data: { session: adminSession }, error: adminError } = await supabaseAdmin.auth.getSession();
+        if (adminError) {
+            if (adminError.message.includes("Refresh Token Not Found")) await supabaseAdmin.auth.signOut();
+        } else if (adminSession) {
+            return { Authorization: `Bearer ${adminSession.access_token}` };
+        }
 
-    // Check User storage second
-    const { data: { session: userSession } } = await supabase.auth.getSession();
-    if (userSession) return { Authorization: `Bearer ${userSession.access_token}` };
+        // Check User storage second
+        const { data: { session: userSession }, error: userError } = await supabase.auth.getSession();
+        if (userError) {
+            if (userError.message.includes("Refresh Token Not Found")) await supabase.auth.signOut();
+        } else if (userSession) {
+            return { Authorization: `Bearer ${userSession.access_token}` };
+        }
+    } catch (err) {
+        console.warn("Auth header extraction failed:", err);
+    }
 
     throw new Error("Not authenticated");
 }

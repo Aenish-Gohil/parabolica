@@ -170,7 +170,10 @@ function SmokyBackground({ progress }: { progress: MotionValue<number> }) {
                     scale: [1, 1.1, 1]
                 }}
                 transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
-                className="absolute inset-0 opacity-20 mix-blend-screen bg-[url('/intro/scanlines.png')] bg-repeat"
+                className="absolute inset-0 opacity-[0.025] pointer-events-none"
+                style={{
+                    backgroundImage: "repeating-linear-gradient(0deg, #fff 0px, #fff 1px, transparent 1px, transparent 4px)",
+                }}
             />
         </motion.div>
     );

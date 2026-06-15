@@ -94,7 +94,12 @@ export default function VRGames() {
                             </div>
 
                             {/* Scanline Effect */}
-                            <div className="absolute inset-0 bg-[url('/intro/scanlines.png')] opacity-[0.03] pointer-events-none" />
+                            <div 
+                                className="absolute inset-0 opacity-[0.03] pointer-events-none"
+                                style={{
+                                    backgroundImage: "repeating-linear-gradient(0deg, #fff 0px, #fff 1px, transparent 1px, transparent 4px)",
+                                }}
+                            />
                         </motion.div>
                     ))}
                 </div>

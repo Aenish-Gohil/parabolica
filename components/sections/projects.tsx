@@ -32,8 +32,13 @@ export default function Projects() {
     const horizontalContainerRef = useRef<HTMLDivElement>(null);
 
     const [measurements, setMeasurements] = useState({ scrollRange: 0, dynamicHeight: "auto" });
+    const [isMounted, setIsMounted] = useState(false);
     const [selectedProject, setSelectedProject] = useState<ProjectItem | null>(null);
     const [isModalOpen, setIsModalOpen] = useState(false);
+
+    useEffect(() => {
+        setIsMounted(true);
+    }, []);
 
     useEffect(() => {
         if (!isDesktop) {
@@ -79,6 +84,8 @@ export default function Projects() {
 
     const x = useTransform(scrollYProgress, [0, 1], [0, -measurements.scrollRange]);
     const smoothX = useSpring(x, { stiffness: 400, damping: 60, restDelta: 0.5 });
+
+    if (!isMounted) return <section ref={targetRef} className="min-h-screen" />;
 
     return (
         <section

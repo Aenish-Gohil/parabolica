@@ -155,7 +155,7 @@ export default function F1Dynamics() {
         />
 
         {/* Grainy Texture Overlay */}
-        <div className="absolute inset-0 opacity-[0.03] mix-blend-overlay bg-[url('https://grainy-gradients.vercel.app/noise.svg')] pointer-events-none" />
+        <div className="absolute inset-0 opacity-[0.03] mix-blend-overlay bg-[url('/noise.svg')] pointer-events-none" />
       </div>
 
       <div className="container mx-auto px-6 relative z-10">

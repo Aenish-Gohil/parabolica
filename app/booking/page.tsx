@@ -97,6 +97,8 @@ function BookingContent() {
 
     // ✅ REALTIME SYNC - Listen for status updates from Admin
     useEffect(() => {
+        if (step === "SUCCESS") return;
+
         const channel = supabase.channel('booking-updates')
             .on('broadcast', { event: 'refresh_slots' }, (payload) => {
                 console.log("REALTIME: SLOT REFRESH TRIGGERED", payload);
@@ -107,7 +109,7 @@ function BookingContent() {
         return () => {
             supabase.removeChannel(channel);
         };
-    }, []);
+    }, [step]);
 
     useEffect(() => {
         if (lenis) {
@@ -131,12 +133,25 @@ function BookingContent() {
         });
 
         const checkSession = async () => {
-            const { data: { session } } = await supabase.auth.getSession();
-            if (session) {
-                setIsAuthenticated(true);
-                setUserEmail(session.user.email ?? null);
+            try {
+                const { data: { session }, error } = await supabase.auth.getSession();
+                if (error) {
+                   if (error.message.includes("Refresh Token Not Found") || error.message.includes("invalid-refresh-token")) {
+                        await supabase.auth.signOut();
+                   }
+                   throw error;
+                }
+                if (session) {
+                    setIsAuthenticated(true);
+                    setUserEmail(session.user.email ?? null);
+                }
+            } catch (err) {
+                console.warn("Auth session check failed, clearing state:", err);
+                setIsAuthenticated(false);
+                setUserEmail(null);
+            } finally {
+                setIsBooted(true);
             }
-            setIsBooted(true);
         };
         checkSession();
 
@@ -578,10 +593,6 @@ function MissionReview({ data, onFinalize }: any) {
             });
 
             onFinalize();
-            // Automatically sign out after 5 seconds or upon returning home
-            setTimeout(() => {
-                supabase.auth.signOut();
-            }, 5000);
         } catch (err: any) {
             console.error("TRANSMISSION FAILURE:", err);
             alert(`Mission Transmission Failed: ${err.message || 'Check terminal'}`);
@@ -735,35 +746,91 @@ function PrecisionVRModule({ config, onChange, onComplete, branch, refreshKey }:
             })}</div></div></motion.div>)}
             <button onClick={onComplete} disabled={!config.time || !config.date} className="w-full bg-[#00ffd2] text-black py-6 md:py-8 font-black uppercase text-xl md:text-2xl italic hover:bg-white disabled:opacity-30 mt-8 md:mt-12 shadow-[0_0_20px_rgba(0,255,210,0.2)]">COMPLETE CALIBRATION</button>
         </motion.div>
-    )
+    );
 }
 
 function PlexusBackground() {
     const mesh = useRef<THREE.Points>(null!);
     const linesRef = useRef<THREE.LineSegments>(null!);
     const count = 40;
+    const maxLines = (count * (count - 1)) / 2;
     const positions = useRef(new Float32Array(count * 3));
     const vels = useRef(new Float32Array(count * 3));
+    const linePositions = useRef(new Float32Array(maxLines * 2 * 3));
+
     useEffect(() => {
         for (let i = 0; i < count; i++) {
             positions.current.set([(Math.random() - 0.5) * 20, (Math.random() - 0.5) * 20, (Math.random() - 0.5) * 10], i * 3);
             vels.current.set([(Math.random() - 0.5) * 0.01, (Math.random() - 0.5) * 0.01, (Math.random() - 0.5) * 0.01], i * 3);
         }
     }, []);
-    useFrame((state) => {
+
+    useFrame(() => {
+        if (!mesh.current || !linesRef.current) return;
+        
         const pos = mesh.current.geometry.attributes.position.array as Float32Array;
-        const lines: number[] = [];
+        const linePos = linesRef.current.geometry.attributes.position.array as Float32Array;
+        let lineIdx = 0;
+        
         for (let i = 0; i < count; i++) {
-            const i3 = i * 3; pos[i3] += vels.current[i3]; pos[i3 + 1] += vels.current[i3 + 1];
+            const i3 = i * 3;
+            pos[i3] += vels.current[i3];
+            pos[i3 + 1] += vels.current[i3 + 1];
             if (Math.abs(pos[i3]) > 10) vels.current[i3] *= -1;
             if (Math.abs(pos[i3 + 1]) > 10) vels.current[i3 + 1] *= -1;
+            
             for (let j = i + 1; j < count; j++) {
-                const j3 = j * 3; const dx = pos[i3] - pos[j3]; const dy = pos[i3 + 1] - pos[j3 + 1];
-                if (Math.sqrt(dx * dx + dy * dy) < 3.5) { lines.push(pos[i3], pos[i3 + 1], pos[i3 + 2], pos[j3], pos[j3 + 1], pos[j3 + 2]); }
+                const j3 = j * 3;
+                const dx = pos[i3] - pos[j3];
+                const dy = pos[i3 + 1] - pos[j3 + 1];
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                
+                if (distance < 3.5) {
+                    const lIdx = lineIdx * 6;
+                    linePos[lIdx] = pos[i3];
+                    linePos[lIdx+1] = pos[i3+1];
+                    linePos[lIdx+2] = pos[i3+2];
+                    linePos[lIdx+3] = pos[j3];
+                    linePos[lIdx+4] = pos[j3+1];
+                    linePos[lIdx+5] = pos[j3+2];
+                    lineIdx++;
+                }
             }
         }
+        
         mesh.current.geometry.attributes.position.needsUpdate = true;
-        linesRef.current.geometry.setAttribute('position', new THREE.Float32BufferAttribute(lines, 3));
+        if (linesRef.current.geometry.attributes.position) {
+            linesRef.current.geometry.attributes.position.needsUpdate = true;
+        }
+        linesRef.current.geometry.setDrawRange(0, lineIdx * 2);
     });
-    return (<group><points ref={mesh}> <bufferGeometry> <bufferAttribute attach="attributes-position" count={count} array={positions.current} itemSize={3} args={[positions.current, 3]} /> </bufferGeometry> <pointsMaterial size={0.1} color="#00ffd2" transparent opacity={0.2} /> </points><lineSegments ref={linesRef}> <bufferGeometry /> <lineBasicMaterial color="#00ffd2" transparent opacity={0.05} /> </lineSegments></group>);
+
+    return (
+        <group>
+            <points ref={mesh}>
+                <bufferGeometry>
+                    <bufferAttribute 
+                      attach="attributes-position" 
+                      count={count} 
+                      array={positions.current} 
+                      itemSize={3} 
+                      args={[positions.current, 3]}
+                    />
+                </bufferGeometry>
+                <pointsMaterial size={0.1} color="#00ffd2" transparent opacity={0.2} />
+            </points>
+            <lineSegments ref={linesRef}>
+                <bufferGeometry>
+                    <bufferAttribute 
+                      attach="attributes-position" 
+                      count={maxLines * 2} 
+                      array={linePositions.current} 
+                      itemSize={3} 
+                      args={[linePositions.current, 3]}
+                    />
+                </bufferGeometry>
+                <lineBasicMaterial color="#00ffd2" transparent opacity={0.05} />
+            </lineSegments>
+        </group>
+    );
 }

@@ -20,7 +20,12 @@ export default function VRHeadset() {
             <div className="absolute inset-0 pointer-events-none z-0">
                 <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(ellipse_80%_60%_at_20%_50%,rgba(255,107,0,0.07)_0%,transparent_70%)]" />
                 <div className="absolute top-0 right-0 w-[60%] h-full bg-[radial-gradient(ellipse_60%_80%_at_80%_30%,rgba(0,255,149,0.04)_0%,transparent_70%)]" />
-                <div className="absolute inset-0 bg-[url('/intro/scanlines.png')] opacity-[0.025]" />
+                <div 
+                    className="absolute inset-0 opacity-[0.025] pointer-events-none"
+                    style={{
+                        backgroundImage: "repeating-linear-gradient(0deg, #fff 0px, #fff 1px, transparent 1px, transparent 4px)",
+                    }}
+                />
             </div>
 
             <div className="container mx-auto px-6 relative z-10">
