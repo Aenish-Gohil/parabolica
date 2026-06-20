@@ -8,7 +8,7 @@ import { BlurReveal } from "@/components/blur-reveal";
 import { motion, AnimatePresence } from "framer-motion";
 import {
     ArrowRight, ArrowLeft, MapPin, CheckCircle2, Zap, Activity, Cpu, Shield, Search,
-    Users, Clock, Calendar, ChevronRight, ChevronLeft, Info, Trophy, User, Monitor,
+    Users, Clock, Calendar, ChevronRight, ChevronLeft, ChevronDown, Info, Trophy, User, Monitor,
     Eye, Rocket, CreditCard, Gamepad2, Dices, Palmtree, Building2, PartyPopper, Mail, Send, Fingerprint, Lock, ShieldCheck
 } from "lucide-react";
 import { useLanguage } from "@/context/language-context";
@@ -584,11 +584,13 @@ function MissionReview({ data, onFinalize }: any) {
             }
 
             // 2. Transmit to FastAPI Backend
+            const bookingDate = data.vrConfig.date || data.f1Config.date || data.fpvConfig.date || null;
+
             await createBooking({
                 branch: data.branch,
                 pilot_name: data.pilot.name,
                 pilot_phone: data.pilot.phone,
-                booking_date: data.vrConfig.date || data.f1Config.date || data.fpvConfig.date || undefined,
+                booking_date: bookingDate === "" ? null : bookingDate,
                 mission_configs: mission_configs
             });
 
@@ -661,10 +663,28 @@ function FPVConfigModule({ config, onChange, onComplete, branch, refreshKey }: a
                     className="bg-white/[0.03] border-2 border-white/10 p-4 font-mono text-lg uppercase outline-none focus:border-[#00ffd2] transition-all w-full md:w-auto [color-scheme:dark]"
                 />
             </div>
-            {config.package && config.date && (<motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 pt-8 md:pt-12 border-t border-white/5"><div className="space-y-6 md:space-y-8"><h4 className="text-lg md:text-xl font-black italic uppercase tracking-widest text-white/40">Driver Squadron</h4><div className="flex flex-wrap gap-2 md:gap-3">{[1, 2, 4, 6].map(n => (<button key={n} onClick={() => onChange({ players: n })} className={`w-12 h-12 md:w-16 md:h-16 border-2 font-black text-lg md:text-xl ${config.players === n ? "bg-white text-black border-white" : "border-white/5"}`}>{n}P</button>))}</div></div><div className="space-y-6 md:space-y-8"><h4 className="text-lg md:text-xl font-black italic uppercase tracking-widest text-white/40">Launch Time</h4><div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-1 md:gap-2 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">{generateTimeSlots(config.date).map(s => {
-                const isBooked = bookedSlots.includes(s);
-                return (<button key={s} disabled={isBooked} onClick={() => onChange({ time: s })} className={`py-3 md:py-4 border-2 font-mono text-[9px] md:text-xs transition-all ${isBooked ? "opacity-20 bg-red-900/10 border-red-900/30 cursor-not-allowed" : config.time === s ? "bg-[#00ffd2] text-black border-[#00ffd2]" : "border-white/5"}`}>{isBooked ? "OCCUPIED" : s}</button>);
-            })}</div></div></motion.div>)}
+            {config.package && config.date && (
+                <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 pt-8 md:pt-12 border-t border-white/5">
+                    <div className="space-y-6 md:space-y-8">
+                        <h4 className="text-lg md:text-xl font-black italic uppercase tracking-widest text-white/40">Driver Squadron</h4>
+                        <TacticalDropdown 
+                            value={config.players} 
+                            onChange={(v) => onChange({ players: v })}
+                            options={[1, 2, 3, 4, 5, 6, 7, 8, 9]}
+                            label="PILOTS"
+                        />
+                    </div>
+                    <div className="space-y-6 md:space-y-8">
+                        <h4 className="text-lg md:text-xl font-black italic uppercase tracking-widest text-white/40">Launch Time</h4>
+                        <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-1 md:gap-2 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+                            {generateTimeSlots(config.date).map(s => {
+                                const isBooked = bookedSlots.includes(s);
+                                return (<button key={s} disabled={isBooked} onClick={() => onChange({ time: s })} className={`py-3 md:py-4 border-2 font-mono text-[9px] md:text-xs transition-all ${isBooked ? "opacity-20 bg-red-900/10 border-red-900/30 cursor-not-allowed" : config.time === s ? "bg-[#00ffd2] text-black border-[#00ffd2]" : "border-white/5"}`}>{isBooked ? "OCCUPIED" : s}</button>);
+                            })}
+                        </div>
+                    </div>
+                </motion.div>
+            )}
             <button onClick={onComplete} disabled={!config.time || !config.date} className="w-full bg-[#00ffd2] text-black py-6 md:py-8 font-black uppercase text-xl md:text-2xl italic hover:bg-white transition-all mt-8 md:mt-12 disabled:opacity-20 shadow-[0_0_20px_rgba(0,255,210,0.2)]">CONNECT FPV DRIFT</button>
         </motion.div>
     )
@@ -682,9 +702,31 @@ function F1ConfigModule({ config, onChange, onComplete, branch, refreshKey }: an
         }
     }, [config.date, branch, refreshKey]);
 
+    const tiers = [
+        { id: "FULL", label: "MOTION + VR", sub: "PEAK SENSORY", icon: Eye }, 
+        { id: "MOTION", label: "MOTION ONLY", sub: "G-FORCE SIM", icon: Activity }, 
+        { id: "STATIC", label: "STATIC COCKPIT", sub: "TECHNICAL FOCUS", icon: Monitor }
+    ];
+
+    // ✅ Mumbai Restriction: Only Motion Only is allowed
+    const filteredTiers = branch === "MUMBAI" 
+        ? tiers.filter(t => t.id === "MOTION") 
+        : tiers;
+
     return (
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="space-y-8 md:space-y-16 border border-white/10 bg-white/[0.02] p-6 md:p-24 relative overflow-hidden">
-            <div className="space-y-4 md:space-y-8"><h4 className="text-lg md:text-xl font-black italic uppercase tracking-widest text-[#00ffd2]">Choose Tier</h4><div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-6">{[{ id: "FULL", label: "MOTION + VR", sub: "PEAK SENSORY", icon: Eye }, { id: "MOTION", label: "MOTION ONLY", sub: "G-FORCE SIM", icon: Activity }, { id: "STATIC", label: "STATIC COCKPIT", sub: "TECHNICAL FOCUS", icon: Monitor }].map(t => (<button key={t.id} onClick={() => onChange({ type: t.id })} className={`p-6 md:p-10 border-2 text-left transition-all ${config.type === t.id ? "bg-[#00ffd2] border-[#00ffd2] text-black" : "border-white/5 hover:border-white/20 text-white"}`}><t.icon className={`w-6 h-6 md:w-10 md:h-10 mb-4 md:mb-6 ${config.type === t.id ? "text-black" : "text-[#00ffd2]"}`} /><h5 className="text-xl md:text-3xl font-black italic uppercase leading-none mb-2">{t.label}</h5><p className={`text-[9px] font-mono uppercase tracking-widest ${config.type === t.id ? "text-black/60" : "text-white/20"}`}>{t.sub}</p></button>))}</div></div>
+            <div className="space-y-4 md:space-y-8">
+                <h4 className="text-lg md:text-xl font-black italic uppercase tracking-widest text-[#00ffd2]">Choose Tier</h4>
+                <div className={`grid grid-cols-1 md:grid-cols-${filteredTiers.length} gap-3 md:gap-6`}>
+                    {filteredTiers.map(t => (
+                        <button key={t.id} onClick={() => onChange({ type: t.id })} className={`p-6 md:p-10 border-2 text-left transition-all ${config.type === t.id ? "bg-[#00ffd2] border-[#00ffd2] text-black" : "border-white/5 hover:border-white/20 text-white"}`}>
+                            <t.icon className={`w-6 h-6 md:w-10 md:h-10 mb-4 md:mb-6 ${config.type === t.id ? "text-black" : "text-[#00ffd2]"}`} />
+                            <h5 className="text-xl md:text-3xl font-black italic uppercase leading-none mb-2">{t.label}</h5>
+                            <p className={`text-[9px] font-mono uppercase tracking-widest ${config.type === t.id ? "text-black/60" : "text-white/20"}`}>{t.sub}</p>
+                        </button>
+                    ))}
+                </div>
+            </div>
             <div className="space-y-4 pt-8 border-t border-white/5">
                 <h4 className="text-lg md:text-xl font-black italic uppercase tracking-widest text-[#00ffd2]">Race Date</h4>
                 <input
@@ -695,10 +737,39 @@ function F1ConfigModule({ config, onChange, onComplete, branch, refreshKey }: an
                     className="bg-white/[0.03] border-2 border-white/10 p-4 font-mono text-lg uppercase outline-none focus:border-[#00ffd2] transition-all w-full md:w-auto [color-scheme:dark]"
                 />
             </div>
-            {config.type && config.date && (<motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 pt-8 md:pt-12 border-t border-white/5"><div className="space-y-4 md:space-y-6"><h4 className="text-lg md:text-xl font-black italic uppercase tracking-widest text-white/40">Race Protocol</h4><div className="flex gap-2"><button onClick={() => onChange({ mode: "SOLO", players: 1 })} className={`flex-1 p-4 md:p-6 border-2 font-black italic uppercase text-sm md:text-base ${config.mode === "SOLO" ? "bg-white text-black border-white" : "border-white/10"}`}>SOLO PRACTICE</button><button onClick={() => onChange({ mode: "RACE" })} className={`flex-1 p-4 md:p-6 border-2 font-black italic uppercase text-sm md:text-base ${config.mode === "RACE" ? "bg-white text-black border-white" : "border-white/10"}`}>GRAND PRIX</button></div><AnimatePresence>{config.mode === "RACE" && (<motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }} className="space-y-4 md:space-y-6 mt-6"><h4 className="text-lg md:text-xl font-black italic uppercase tracking-widest text-white/40">Number of Pilots</h4><div className="flex flex-wrap gap-2 md:gap-3">{[1, 2, 4, 6, 8].map(n => (<button key={n} onClick={() => onChange({ players: n })} className={`w-12 h-12 md:w-16 md:h-16 border-2 font-black text-lg md:text-xl transition-all ${config.players === n ? "bg-[#00ffd2] text-black border-[#00ffd2]" : "border-white/5"}`}>{n}P</button>))}</div></motion.div>)}</AnimatePresence></div><div className="space-y-6 md:space-y-8"><h4 className="text-lg md:text-xl font-black italic uppercase tracking-widest text-white/40">Select Grid Time</h4><div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-1 md:gap-2 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">{generateTimeSlots(config.date).map(s => {
-                const isBooked = bookedSlots.includes(s);
-                return (<button key={s} disabled={isBooked} onClick={() => onChange({ time: s })} className={`py-3 md:py-4 border-2 font-mono text-[9px] md:text-xs transition-all ${isBooked ? "opacity-20 bg-red-900/10 border-red-900/30 cursor-not-allowed" : config.time === s ? "bg-[#00ffd2] text-black border-[#00ffd2]" : "border-white/5"}`}>{isBooked ? "OCCUPIED" : s}</button>);
-            })}</div></div></motion.div>)}
+            {config.type && config.date && (
+                <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: "auto" }} className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 pt-8 md:pt-12 border-t border-white/5">
+                    <div className="space-y-4 md:space-y-6">
+                        <h4 className="text-lg md:text-xl font-black italic uppercase tracking-widest text-white/40">Race Protocol</h4>
+                        <div className="flex gap-2">
+                            <button onClick={() => onChange({ mode: "SOLO", players: 1 })} className={`flex-1 p-4 md:p-6 border-2 font-black italic uppercase text-sm md:text-base ${config.mode === "SOLO" ? "bg-white text-black border-white" : "border-white/10"}`}>SOLO PRACTICE</button>
+                            <button onClick={() => onChange({ mode: "RACE" })} className={`flex-1 p-4 md:p-6 border-2 font-black italic uppercase text-sm md:text-base ${config.mode === "RACE" ? "bg-white text-black border-white" : "border-white/10"}`}>GRAND PRIX</button>
+                        </div>
+                        <AnimatePresence>
+                            {config.mode === "RACE" && (
+                                <motion.div initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -10 }} className="space-y-4 md:space-y-6 mt-6">
+                                    <h4 className="text-lg md:text-xl font-black italic uppercase tracking-widest text-white/40">Number of Pilots</h4>
+                                    <TacticalDropdown 
+                                        value={config.players} 
+                                        onChange={(v) => onChange({ players: v })}
+                                        options={[1, 2, 3, 4, 5, 6, 7, 8, 9]}
+                                        label="PILOTS"
+                                    />
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+                    </div>
+                    <div className="space-y-6 md:space-y-8">
+                        <h4 className="text-lg md:text-xl font-black italic uppercase tracking-widest text-white/40">Select Grid Time</h4>
+                        <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-1 md:gap-2 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
+                            {generateTimeSlots(config.date).map(s => {
+                                const isBooked = bookedSlots.includes(s);
+                                return (<button key={s} disabled={isBooked} onClick={() => onChange({ time: s })} className={`py-3 md:py-4 border-2 font-mono text-[9px] md:text-xs transition-all ${isBooked ? "opacity-20 bg-red-900/10 border-red-900/30 cursor-not-allowed" : config.time === s ? "bg-[#00ffd2] text-black border-[#00ffd2]" : "border-white/5"}`}>{isBooked ? "OCCUPIED" : s}</button>);
+                            })}
+                        </div>
+                    </div>
+                </motion.div>
+            )}
             <button onClick={onComplete} disabled={!config.time || !config.date} className="w-full bg-[#00ffd2] text-black py-6 md:py-8 font-black uppercase text-xl md:text-2xl italic hover:bg-white transition-all mt-8 md:mt-12 disabled:opacity-20 shadow-[0_0_20px_rgba(0,255,210,0.2)]">CONFIRM F1 RACER</button>
         </motion.div>
     )
@@ -740,12 +811,118 @@ function PrecisionVRModule({ config, onChange, onComplete, branch, refreshKey }:
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="grid grid-cols-1 gap-8 md:gap-12 border border-white/10 bg-white/[0.02] p-8 md:p-24 relative overflow-hidden">
             <div className="space-y-6 md:space-y-12 relative z-10 pt-8 md:pt-12 border-b border-white/5 pb-12"><h4 className="text-2xl md:text-5xl font-black italic uppercase text-[#00ffd2]">Mission Date</h4><input type="date" min={today} value={config.date} onChange={(e) => onChange({ date: e.target.value })} className="bg-white/[0.03] border-2 border-white/10 p-4 md:p-6 font-mono text-lg md:text-2xl uppercase outline-none focus:border-[#00ffd2] transition-all w-full md:w-auto [color-scheme:dark]" /></div>
             
-            {config.date && (<motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-12 md:space-y-24"><div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-24 relative z-10"><div className="space-y-6 md:space-y-12"><h4 className="text-2xl md:text-5xl font-black italic uppercase text-white/40">Squad Count</h4><div className="flex flex-wrap gap-2 md:gap-3">{[1, 2, 4, 6].map(n => (<button key={n} onClick={() => onChange({ players: n })} className={`w-14 h-14 md:w-20 md:h-20 border-2 font-black text-xl md:text-2xl transition-all ${config.players === n ? "bg-[#00ffd2] text-black border-[#00ffd2]" : "border-white/5"}`}>{n}P</button>))}</div></div><div className="space-y-6 md:space-y-12"><h4 className="text-2xl md:text-5xl font-black italic uppercase text-white/40">Deployment</h4><div className="flex gap-2 md:gap-4">{[30, 45].map(d => (<button key={d} onClick={() => onChange({ duration: d })} className={`flex-1 p-4 md:p-8 border-2 text-left transition-all ${config.duration === d ? "bg-[#00ffd2] text-black border-[#00ffd2]" : "border-white/5"}`}><span className="text-2xl md:text-4xl font-black italic block uppercase">{d} MIN</span></button>))}</div></div></div><div className="space-y-6 md:space-y-12 relative z-10 pt-8 md:pt-12 border-t border-white/5"><h4 className="text-2xl md:text-5xl font-black italic uppercase text-white/40">Secure Uplink Slot</h4><div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2 md:gap-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">{generateTimeSlots(config.date).map(s => {
-                const isBooked = bookedSlots.includes(s);
-                return (<button key={s} disabled={isBooked} onClick={() => onChange({ time: s })} className={`py-4 md:py-6 border-2 font-mono text-[10px] md:text-sm transition-all ${isBooked ? "opacity-20 bg-red-900/10 border-red-900/30 cursor-not-allowed" : config.time === s ? "bg-[#00ffd2] text-black border-[#00ffd2]" : "border-white/5"}`}>{isBooked ? "OCCUPIED" : s}</button>);
-            })}</div></div></motion.div>)}
+            {config.date && (
+                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-12 md:space-y-24">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-24 relative z-10">
+                        <div className="space-y-6 md:space-y-12">
+                            <h4 className="text-2xl md:text-5xl font-black italic uppercase text-white/40">Squad Count</h4>
+                            <TacticalDropdown 
+                                value={config.players} 
+                                onChange={(v) => onChange({ players: v })}
+                                options={[1, 2, 3, 4, 5, 6, 7, 8, 9]}
+                                label="PILOTS"
+                                large
+                            />
+                        </div>
+                        <div className="space-y-6 md:space-y-12">
+                            <h4 className="text-2xl md:text-5xl font-black italic uppercase text-white/40">Deployment</h4>
+                            <div className="flex gap-2 md:gap-4">
+                                {[30, 45].map(d => (
+                                    <button key={d} onClick={() => onChange({ duration: d })} className={`flex-1 p-4 md:p-8 border-2 text-left transition-all ${config.duration === d ? "bg-[#00ffd2] text-black border-[#00ffd2]" : "border-white/5"}`}>
+                                        <span className="text-2xl md:text-4xl font-black italic block uppercase">{d} MIN</span>
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    </div>
+                    <div className="space-y-6 md:space-y-12 relative z-10 pt-8 md:pt-12 border-t border-white/5">
+                        <h4 className="text-2xl md:text-5xl font-black italic uppercase text-white/40">Secure Uplink Slot</h4>
+                        <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-2 md:gap-3 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
+                            {generateTimeSlots(config.date).map(s => {
+                                const isBooked = bookedSlots.includes(s);
+                                return (<button key={s} disabled={isBooked} onClick={() => onChange({ time: s })} className={`py-4 md:py-6 border-2 font-mono text-[10px] md:text-sm transition-all ${isBooked ? "opacity-20 bg-red-900/10 border-red-900/30 cursor-not-allowed" : config.time === s ? "bg-[#00ffd2] text-black border-[#00ffd2]" : "border-white/5"}`}>{isBooked ? "OCCUPIED" : s}</button>);
+                            })}
+                        </div>
+                    </div>
+                </motion.div>
+            )}
             <button onClick={onComplete} disabled={!config.time || !config.date} className="w-full bg-[#00ffd2] text-black py-6 md:py-8 font-black uppercase text-xl md:text-2xl italic hover:bg-white disabled:opacity-30 mt-8 md:mt-12 shadow-[0_0_20px_rgba(0,255,210,0.2)]">COMPLETE CALIBRATION</button>
         </motion.div>
+    );
+}
+
+// ── CUSTOM TACTICAL DROPDOWN ──
+
+function TacticalDropdown({ value, onChange, options, label, large }: { value: number; onChange: (v: number) => void; options: number[]; label: string; large?: boolean }) {
+    const [isOpen, setIsOpen] = useState(false);
+    const containerRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (containerRef.current && !containerRef.current.contains(event.target as Node)) {
+                setIsOpen(false);
+            }
+        };
+        document.addEventListener("mousedown", handleClickOutside);
+        return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
+
+    return (
+        <div ref={containerRef} className="relative inline-block w-full">
+            <button
+                onClick={() => setIsOpen(!isOpen)}
+                className={`w-full bg-black border-2 transition-all flex items-center justify-between group active:scale-[0.98] ${
+                    isOpen ? "border-[#00ffd2]" : "border-white/10 hover:border-white/20"
+                } ${large ? "p-6 md:p-8" : "p-4"}`}
+            >
+                <div className="flex items-center gap-4">
+                    <Users className={`w-4 h-4 md:w-6 md:h-6 ${isOpen ? "text-[#00ffd2]" : "text-white/40 group-hover:text-[#00ffd2]"}`} />
+                    <span className={`font-black italic uppercase transition-all ${
+                        large ? "text-2xl md:text-5xl" : "text-xl"
+                    }`}>
+                        {value} <span className="text-white/20 ml-2">{label}</span>
+                    </span>
+                </div>
+                <ChevronDown className={`w-4 h-4 md:w-6 md:h-6 transition-transform duration-500 ${isOpen ? "rotate-180 text-[#00ffd2]" : "text-white/20"}`} />
+            </button>
+
+            <AnimatePresence>
+                {isOpen && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                        animate={{ opacity: 1, y: -5, scale: 1 }}
+                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                        className="absolute bottom-full left-0 w-full mb-2 z-[90] bg-[#0a0a0a] border-2 border-[#00ffd2]/30 backdrop-blur-3xl shadow-[0_20px_50px_rgba(0,0,0,0.8)] overflow-hidden"
+                    >
+                        <div className="p-4 grid grid-cols-3 gap-2">
+                            {options.map((opt) => (
+                                <button
+                                    key={opt}
+                                    onClick={() => {
+                                        onChange(opt);
+                                        setIsOpen(false);
+                                    }}
+                                    className={`py-4 md:py-6 font-black italic text-lg md:text-2xl transition-all relative overflow-hidden ${
+                                        value === opt 
+                                            ? "bg-[#00ffd2] text-black" 
+                                            : "bg-white/[0.03] text-white/40 hover:bg-white/10 hover:text-white"
+                                    }`}
+                                >
+                                    {opt}P
+                                    {value === opt && (
+                                        <motion.div 
+                                            layoutId="active-bg" 
+                                            className="absolute inset-0 bg-[#00ffd2] -z-10"
+                                        />
+                                    )}
+                                </button>
+                            ))}
+                        </div>
+                        <div className="h-1 bg-gradient-to-r from-transparent via-[#00ffd2]/20 to-transparent" />
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </div>
     );
 }
 
