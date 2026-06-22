@@ -60,6 +60,7 @@ export default function Navbar() {
     { name: content.nav.projects, href: "/#projects", id: "projects" },
     { name: content.nav.events, href: "/#events", id: "events" },
     { name: content.nav.booking, href: "/#booking", id: "booking" },
+    { name: content.nav.blog, href: "/blog", id: "blog" },
   ];
 
   // Active Section Detection (Scroll-based)
@@ -138,14 +139,20 @@ export default function Navbar() {
 
   const scrollToSection = (e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
     const isHomePage = typeof window !== "undefined" && window.location.pathname === "/";
-    const targetId = href.includes("#") ? href.split("#")[1] : "home";
+    const isAnchor = href.startsWith("/#") || href.startsWith("#");
+    const targetId = isAnchor ? href.split("#")[1] : null;
 
-    // If we are on the home page, scroll smoothly
-    if (isHomePage) {
+    // If it's a direct page link (like /blog), just let it navigate normally
+    if (!isAnchor) {
+      setIsMenuOpen(false);
+      return;
+    }
+
+    // If we are on the home page and it's an anchor, scroll smoothly
+    if (isHomePage && targetId) {
       e.preventDefault();
       setIsMenuOpen(false);
       
-      // Ensure lenis is started before scrolling
       if (lenis) {
         lenis.start();
         const elem = targetId === "home" ? null : document.getElementById(targetId);
@@ -157,7 +164,7 @@ export default function Navbar() {
         });
       }
     } else {
-      // If we are on a different page (like a deck page), navigate to home with hash
+      // If we are on a different page, navigation to home with hash happens normally
       setIsMenuOpen(false);
     }
   };

@@ -39,31 +39,30 @@ export default function VRArena() {
                     </BlurReveal>
                     <BlurReveal>
                         <h2 className="text-4xl md:text-8xl font-black italic uppercase tracking-tighter leading-tight">
-                            STEP INSIDE<br />
+                            COME PLAY IN<br />
                             <span className="text-white/20" style={{ WebkitTextStroke: "1px rgba(255,255,255,0.2)" }}>
-                                THE ARENA
+                                OUR WORLD
                             </span>
                         </h2>
                     </BlurReveal>
                     <BlurReveal>
                         <p className="max-w-2xl mx-auto text-white/40 text-sm md:text-base leading-relaxed mt-6 font-light">
-                            A dedicated physical arena where players gear up with full headsets, haptic vests, and motion controllers —
-                            then enter the <span className="text-white font-medium">same digital world together</span>.
-                            Real space. Virtual stakes.
+                            Imagine a playground where the walls aren't real, but the action is. Our physical arena is a safe, wide-open space where you and your friends put on headsets and literally walk together into a giant digital game. You're not just playing a game — you're <span className="text-white font-medium">living inside it</span>.
                         </p>
                     </BlurReveal>
                 </div>
 
                 {/* Full-width Arena image */}
                 <motion.div
-                    initial={{ opacity: 0, scale: 0.96 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
-                    transition={{ duration: 1.4, ease: "easeOut" }}
+                    initial={{ opacity: 0, y: 40 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
                     className="relative mb-16 overflow-hidden"
                     style={{ maxHeight: 560 }}
                 >
                     <img
-                        src="/vr_arena_hero.png"
+                        src="/vr_arena_hero.jpg"
                         alt="VR Arena"
                         className="w-full object-cover object-center"
                         style={{ maxHeight: 560 }}
@@ -89,10 +88,8 @@ export default function VRArena() {
                     {STATS.map((stat, i) => (
                         <motion.div
                             key={stat.label}
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            transition={{ delay: i * 0.1, duration: 0.6 }}
-                            className="flex flex-col items-center justify-center p-8 bg-black text-center group hover:bg-primary/5 transition-all duration-500"
+                            whileHover={{ backgroundColor: "rgba(0, 255, 149, 0.05)" }}
+                            className="flex flex-col items-center justify-center p-8 bg-black text-center group transition-all duration-500 cursor-default border-r last:border-r-0 border-white/[0.05]"
                         >
                             <stat.icon className="w-5 h-5 text-primary mb-3" />
                             <div className="text-3xl md:text-5xl font-black italic text-white tracking-tight mb-1">{stat.value}</div>

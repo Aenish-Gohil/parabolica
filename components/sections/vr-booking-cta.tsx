@@ -25,14 +25,14 @@ export default function VRBookingCTA() {
 
                 <BlurReveal>
                     <h2 className="text-5xl md:text-8xl font-black italic uppercase tracking-tighter leading-[0.9] mb-12">
-                        PLUG INTO<br />
-                        <span className="text-primary">THE NETWORK</span>
+                        READY TO<br />
+                        <span className="text-primary">DIVE IN?</span>
                     </h2>
                 </BlurReveal>
 
                 <BlurReveal>
                     <p className="text-white/40 text-sm md:text-base max-w-xl mx-auto mb-16 leading-relaxed font-light">
-                        Individual sessions, squad battles, or full-arena domination. The portal is open 24/7.
+                        Come alone or bring your squad. We're open every day, and your first adventure is just a few clicks away.
                     </p>
                 </BlurReveal>
 

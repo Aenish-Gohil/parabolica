@@ -33,14 +33,15 @@ export default function VRHeadset() {
 
                     {/* Image */}
                     <motion.div
-                        initial={{ opacity: 0, x: -60 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 1.2, ease: "easeOut" }}
+                        initial={{ opacity: 0, x: -60, filter: "blur(10px)" }}
+                        whileInView={{ opacity: 1, x: 0, filter: "blur(0px)" }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1] }}
                         className="relative flex items-center justify-center"
                     >
                         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(255,107,0,0.15)_0%,transparent_70%)] blur-2xl" />
                         <img
-                            src="/vr_headset_hero.png"
+                            src="/vr_headset_hero.JPG"
                             alt="VR Headset"
                             className="relative z-10 w-full max-w-lg mx-auto drop-shadow-[0_0_80px_rgba(255,107,0,0.3)]"
                         />
@@ -64,18 +65,15 @@ export default function VRHeadset() {
                         </BlurReveal>
                         <BlurReveal>
                             <h2 className="text-4xl md:text-7xl font-black italic uppercase tracking-tighter leading-tight mb-6">
-                                SEE WHAT<br />
+                                SEE THE<br />
                                 <span className="text-white/20" style={{ WebkitTextStroke: "1px rgba(255,255,255,0.2)" }}>
-                                    ISN'T REAL
+                                    IMPOSSIBLE
                                 </span>
                             </h2>
                         </BlurReveal>
                         <BlurReveal>
                             <p className="text-white/40 text-sm md:text-base leading-relaxed mb-12 font-light">
-                                Our arena is equipped with the most advanced VR headsets on the market.
-                                Step in, strap on, and within seconds your brain{" "}
-                                <span className="text-white font-medium">cannot tell the difference</span>{" "}
-                                between reality and the virtual battlefield.
+                                Our headsets are like magic glasses. The moment you put them on, your real surroundings disappear, and you'll find yourself standing in a stunning 4K world. It's so clear and fast that your eyes and brain will believe <span className="text-white font-medium">everything you see is real</span>.
                             </p>
                         </BlurReveal>
 
@@ -83,10 +81,8 @@ export default function VRHeadset() {
                             {SPECS.map((spec, i) => (
                                 <motion.div
                                     key={spec.label}
-                                    initial={{ opacity: 0, y: 20 }}
-                                    whileInView={{ opacity: 1, y: 0 }}
-                                    transition={{ delay: i * 0.1, duration: 0.6 }}
-                                    className="group p-5 bg-white/[0.03] border border-white/[0.07] hover:border-primary/50 hover:bg-primary/5 transition-all duration-500"
+                                    whileHover={{ scale: 1.05, y: -5 }}
+                                    className="group p-5 bg-white/[0.03] border border-white/[0.07] hover:border-primary/50 hover:bg-primary/5 transition-all duration-300 cursor-default"
                                 >
                                     <spec.icon className="w-5 h-5 text-primary mb-3" />
                                     <div className="text-[9px] font-mono text-white/30 uppercase tracking-widest mb-1">{spec.label}</div>

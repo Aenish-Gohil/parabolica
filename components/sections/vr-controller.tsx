@@ -63,16 +63,15 @@ export default function VRController() {
                     </BlurReveal>
                     <BlurReveal>
                         <h2 className="text-4xl md:text-8xl font-black italic uppercase tracking-tighter leading-tight">
-                            YOUR HANDS.<br />
+                            YOUR HANDS,<br />
                             <span className="text-white/20" style={{ WebkitTextStroke: "1px rgba(255,255,255,0.2)" }}>
-                                YOUR WEAPONS.
+                                DIGITIZED.
                             </span>
                         </h2>
                     </BlurReveal>
                     <BlurReveal>
                         <p className="max-w-2xl mx-auto text-white/40 text-sm md:text-base leading-relaxed mt-6 font-light">
-                            Every gesture, every grip — translated into the virtual world in real time.
-                            Our <span className="text-white font-medium">precision motion controllers</span> are the link between your instincts and the battlefield.
+                            Forget clunky buttons. These controllers feel like a natural extension of your hands. Whether you're picking up a sword or aiming a blaster, every finger move you make in real life happens <span className="text-white font-medium">instantly in the game</span>.
                         </p>
                     </BlurReveal>
                 </div>
@@ -84,10 +83,8 @@ export default function VRController() {
                         {CONTROLS.map((ctrl, i) => (
                             <motion.div
                                 key={ctrl.key}
-                                initial={{ opacity: 0, x: -40 }}
-                                whileInView={{ opacity: 1, x: 0 }}
-                                transition={{ delay: i * 0.12, duration: 0.7 }}
-                                className="group flex gap-5 p-6 bg-white/[0.03] border border-white/[0.07] hover:border-white/20 transition-all duration-500"
+                                whileHover={{ scale: 1.02, x: 10 }}
+                                className="group flex gap-5 p-6 bg-white/[0.03] border border-white/[0.07] hover:border-primary/40 hover:bg-white/[0.05] transition-all duration-300 cursor-default"
                             >
                                 <div
                                     className="flex-shrink-0 w-12 h-12 flex items-center justify-center border"
@@ -110,36 +107,18 @@ export default function VRController() {
 
                     {/* Controller image */}
                     <motion.div
-                        initial={{ opacity: 0, x: 60 }}
-                        whileInView={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 1.2, ease: "easeOut" }}
+                        initial={{ opacity: 0, x: 60, filter: "blur(10px)" }}
+                        whileInView={{ opacity: 1, x: 0, filter: "blur(0px)" }}
+                        viewport={{ once: true }}
+                        transition={{ duration: 1.5, ease: [0.22, 1, 0.36, 1] }}
                         className="relative flex items-center justify-center"
                     >
                         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(0,255,149,0.12)_0%,transparent_70%)] blur-2xl" />
                         <img
-                            src="/vr_controller_hero.png"
+                            src="/vr_controller_hero.jpg"
                             alt="VR Controller"
                             className="relative z-10 w-full max-w-md mx-auto drop-shadow-[0_0_80px_rgba(0,255,149,0.25)]"
                         />
-
-                        {/* Ping dots */}
-                        {[
-                            { top: "20%", left: "60%", label: "INDEX TRIGGER" },
-                            { top: "55%", left: "25%", label: "GRIP" },
-                            { top: "75%", left: "55%", label: "THUMBSTICK" },
-                        ].map((dot) => (
-                            <div
-                                key={dot.label}
-                                className="absolute z-20 group/dot"
-                                style={{ top: dot.top, left: dot.left }}
-                            >
-                                <div className="w-3 h-3 bg-primary rounded-full animate-ping opacity-60" />
-                                <div className="absolute inset-0 w-3 h-3 bg-primary rounded-full" />
-                                <div className="absolute left-5 top-1/2 -translate-y-1/2 bg-black/80 border border-white/10 px-3 py-1 whitespace-nowrap opacity-0 group-hover/dot:opacity-100 transition-opacity">
-                                    <span className="text-[9px] font-mono text-primary tracking-widest uppercase">{dot.label}</span>
-                                </div>
-                            </div>
-                        ))}
                     </motion.div>
                 </div>
             </div>

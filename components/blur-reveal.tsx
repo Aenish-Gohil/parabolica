@@ -19,8 +19,12 @@ export function BlurReveal({
         <motion.div
             initial={{ opacity: 0, filter: "blur(15px)", y: 30 }}
             whileInView={{ opacity: 1, filter: "blur(0px)", y: 0 }}
-            viewport={{ once: false, margin: "-60px" }}
-            transition={{ duration: 0.9, delay, ease: [0.25, 0.46, 0.45, 0.94] }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ 
+                duration: 1.2, 
+                delay, 
+                ease: [0.22, 1, 0.36, 1] // Cubic bezier for smoothness
+            }}
             className={cn("will-change-[opacity,filter,transform]", className)}
         >
             {children}

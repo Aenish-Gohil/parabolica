@@ -109,17 +109,18 @@ export default function VRHero() {
                             className="bg-clip-text text-transparent"
                             style={{ backgroundImage: "linear-gradient(135deg, #ff6b00 0%, #ff3000 50%, rgba(255,255,255,0.15) 100%)" }}
                         >
-                            ANOTHER WORLD
+                            THE FUTURE
                         </span>
                     </h1>
                 </BlurReveal>
 
                 <BlurReveal>
                     <p className="max-w-xl mx-auto text-white/40 text-sm md:text-base leading-relaxed mb-4 font-light italic">
-                        The boundary between digital and physical is{" "}
-                        <span className="text-white not-italic font-semibold">gone</span>. Your body enters our arena.
-                        Your mind enters the game. The question is — are you{" "}
-                        <span className="text-primary font-semibold not-italic">curious enough</span> to find out what's on the other side?
+                        The line between what's real and what's virtual has{" "}
+                        <span className="text-white not-italic font-semibold">vanished</span>. 
+                        Your body stays in our arena, but your mind travels to worlds you've only dreamed of. 
+                        Are you{" "}
+                        <span className="text-primary font-semibold not-italic">ready to jump in</span>?
                     </p>
                 </BlurReveal>
 

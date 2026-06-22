@@ -5,6 +5,7 @@
         "projects": "EXPERIENCES",
         "events": "EVENTS",
         "booking": "BOOKING",
+        "blog": "BLOG",
         "contact": "CONTACT"
     },
     "hero": {

@@ -9,7 +9,7 @@ import VRHeadset     from "@/components/sections/vr-headset";
 import VRController  from "@/components/sections/vr-controller";
 import VRHaptics     from "@/components/sections/vr-haptics";
 import VRArena       from "@/components/sections/vr-arena";
-import VRGames       from "@/components/sections/vr-games";
+import VRMaps        from "@/components/sections/vr-maps";
 import VRBookingCTA  from "@/components/sections/vr-booking-cta";
 import { useLenis }  from "@/components/smooth-scroll";
 
@@ -18,7 +18,7 @@ export default function VRArenaPage() {
     const lenis = useLenis();
 
     useEffect(() => {
-        const timer = setTimeout(() => setIsCalibrating(false), 3000);
+        const timer = setTimeout(() => setIsCalibrating(false), 2000);
         if (lenis) lenis.scrollTo(0, { immediate: true });
         return () => clearTimeout(timer);
     }, [lenis]);
@@ -71,8 +71,8 @@ export default function VRArenaPage() {
                 {/* 5. The Arena — physical venue */}
                 <VRArena />
 
-                {/* 6. Choose Your Virtual Destiny — game library */}
-                <VRGames />
+                {/* 5.5 Virtual Maps — Where you fight */}
+                <VRMaps />
 
                 {/* 7. Book a session CTA */}
                 <VRBookingCTA />

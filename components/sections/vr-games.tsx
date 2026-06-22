@@ -9,25 +9,25 @@ const GAMES = [
   {
     title: "Shadow Strike",
     type: "Tactical Shooter",
-    difficulty: "Advanced",
+    difficulty: "Challenging",
     color: "#00ff95"
   },
   {
-    title: "Vortex Runner",
-    type: "Sci-Fi Infinite",
-    difficulty: "Casual",
+    title: "Space Racer",
+    type: "High-Speed Racing",
+    difficulty: "Easy to Learn",
     color: "#00e0ff"
   },
   {
-    title: "Cyber Siege",
-    type: "Tower Defense",
-    difficulty: "Mid-Level",
+    title: "Cyber Defense",
+    type: "Guard the Base",
+    difficulty: "Intermediate",
     color: "#ff00e0"
   },
   {
-    title: "Hyper Speed",
-    type: "Extreme Racing",
-    difficulty: "Pro",
+    title: "Vortex Legend",
+    type: "Epic Adventure",
+    difficulty: "Advanced",
     color: "#fffb00"
   }
 ];
@@ -44,14 +44,14 @@ export default function VRGames() {
                         </BlurReveal>
                         <BlurReveal>
                             <h2 className="text-4xl md:text-7xl font-black italic uppercase tracking-tighter leading-tight">
-                                CHOOSE YOUR<br />
-                                <span className="text-white/40">VIRTUAL DESTINY</span>
+                                PICK YOUR<br />
+                                <span className="text-white/40">ADVENTURE</span>
                             </h2>
                         </BlurReveal>
                     </div>
                     <BlurReveal>
                         <p className="text-white/20 text-xs font-mono uppercase tracking-widest max-w-xs md:text-right">
-                            Syncing with 48 active nodes // Global latency: 5ms
+                            Ready for launch // All systems green
                         </p>
                     </BlurReveal>
                 </div>

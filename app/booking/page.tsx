@@ -232,7 +232,7 @@ function BookingContent() {
             <Navbar />
 
             <div className="fixed inset-0 z-0 pointer-events-none opacity-40">
-                <Canvas camera={{ position: [0, 0, 10] }}>
+                <Canvas camera={{ position: [0, 0, 10] }} style={{ pointerEvents: "none" }}>
                     <PlexusBackground />
                 </Canvas>
             </div>
